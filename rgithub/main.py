@@ -9,8 +9,10 @@ import urls
 import urllib.request
 import json
 import textwrap
+import random
 
 max_repos = 3
+max_page=33
 WIDTH = 79
 
 def load_top_repository(url):
@@ -18,6 +20,18 @@ def load_top_repository(url):
         'q': 'language:Python',
         'sort': 'stars',
         'order': 'desc'
+    }
+    request = urllib.request.urlopen(url + '?' + urllib.parse.urlencode(query))
+    text = request.read().decode('utf-8')
+    repos = json.loads(text)['items']
+    for r in repos[0:max_repos]:
+        process(r)
+        
+def load_rand_repository(url):
+    randpage = random.randint(2, max_page)
+    query = {
+        'q': 'language:Python',
+        'page': randpage
     }
     request = urllib.request.urlopen(url + '?' + urllib.parse.urlencode(query))
     text = request.read().decode('utf-8')
@@ -40,4 +54,4 @@ def process(r):
     
 if __name__ == '__main__':
     load_top_repository(url=urls.GITHUB_SEARCH_REPO)
-    
+    load_rand_repository(url=urls.GITHUB_SEARCH_REPO)
