@@ -6,6 +6,7 @@ Created on Fri Aug 22 12:01:47 2014
 """
 
 import urls
+import argparse
 import urllib.request
 import json
 import textwrap
@@ -15,9 +16,15 @@ max_repos = 3
 max_page=33
 WIDTH = 79
 
-def load_top_repository(url):
+parser = argparse.ArgumentParser()
+
+def main():
+    parser.add_argument('-l', '--language', help='Your random Programming Language', required=True)
+    return parser.parse_args()
+
+def load_top_repository(url, args):
     query = {
-        'q': 'language:Python',
+        'q': 'language:{0}'.format(args.language),
         'sort': 'stars',
         'order': 'desc'
     }
@@ -27,10 +34,10 @@ def load_top_repository(url):
     for r in repos[0:max_repos]:
         process(r)
         
-def load_rand_repository(url):
+def load_rand_repository(url, args):
     randpage = random.randint(2, max_page)
     query = {
-        'q': 'language:Python',
+        'q': 'language:{0}'.format(args.language),
         'page': randpage
     }
     request = urllib.request.urlopen(url + '?' + urllib.parse.urlencode(query))
@@ -53,5 +60,6 @@ def process(r):
     print("----------\n")
     
 if __name__ == '__main__':
-    load_top_repository(url=urls.GITHUB_SEARCH_REPO)
-    load_rand_repository(url=urls.GITHUB_SEARCH_REPO)
+    args = main()
+    load_top_repository(url=urls.GITHUB_SEARCH_REPO, args=args)
+    load_rand_repository(url=urls.GITHUB_SEARCH_REPO, args=args)
